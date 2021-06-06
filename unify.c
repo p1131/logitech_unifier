@@ -32,22 +32,13 @@
 
 int main(int argc, char *argv[])
 {
-	static const unsigned char magic_seq[] = {
-		0x10,
-		0xFF,
-		0x80,
-		0xB2,
-		0x01,
-		0x00,
-		0x00
-	};
 	int fd, ret = EXIT_FAILURE;
-	if (argc == 1) {
+	if (argc != 2) {
 		errno = EINVAL;
 		perror("No hidraw device given");
 		exit(ret);
 	}
-	/* Open the Device with non-blocking reads. */
+	/* Open the Device with non-blocking. */
 	fd = open(argv[1], O_RDWR | O_NONBLOCK);
 	if (fd < 0) {
 		perror("open() failed");
@@ -72,6 +63,15 @@ int main(int argc, char *argv[])
 	}
 	/* Send the magic sequence to the Device */
 	{
+		static const unsigned char magic_seq[] = {
+			0x10,
+			0xFF,
+			0x80,
+			0xB2,
+			0x01,
+			0x00,
+			0x00
+		};
 		const ssize_t res = write(fd, magic_seq, sizeof(magic_seq));
 		if (res < 0)
 			perror("write failed()");
